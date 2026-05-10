@@ -1,0 +1,10 @@
+{
+  "name": "typst2web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site that renders a Typst document, deployable on Vercel or Cloudflare Pages",
+  "scripts": {
+    "build": "bash build.sh",
+    "build:win": "pwsh build.ps1"
+  }
+}

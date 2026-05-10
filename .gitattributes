@@ -1,0 +1,14 @@
+# Normalize all text files to LF in the repo
+* text=auto eol=lf
+
+# Shell scripts must stay LF (bash on Linux breaks on CRLF)
+*.sh text eol=lf
+
+# Explicit binary types — prevent accidental newline normalization
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.pdf binary

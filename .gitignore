@@ -1,0 +1,21 @@
+# Typst binary downloaded during build
+typst-*/
+typst
+
+# Fonts downloaded during build (fetched from Fontsource on every build)
+fonts/
+
+# Generated output
+public/page-*.svg
+public/document.svg
+public/pages.json
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Dependencies
+node_modules/
+.claude/
