@@ -10,6 +10,14 @@ case "$ARCH" in
 esac
 echo "    Architecture: $ARCH (target: $TYPST_ARCH)"
 
+# Render mode: svg | html | both (default both)
+RENDER="${RENDER:-both}"
+case "$RENDER" in
+  svg|html|both) ;;
+  *) echo "RENDER must be one of: svg, html, both (got: $RENDER)" >&2; exit 1 ;;
+esac
+echo "    Render mode: $RENDER"
+
 # Pinned Typst version — bump intentionally to upgrade
 TYPST_VERSION="v0.14.2"
 
@@ -56,35 +64,51 @@ echo "    $(ls fonts/*.ttf | wc -l) font files ready"
 
 echo "==> Preparing output directory..."
 mkdir -p public
-# Clean up previous SVGs (useful locally, no-op in CI)
-rm -f public/page-*.svg public/document.svg
+# Clean up previous outputs (useful locally, no-op in CI)
+rm -f public/page-*.svg public/document.svg public/document.html
 
-echo "==> Compiling document..."
-# Compile to multi-page SVG: page-1.svg, page-2.svg, ...
-# --font-path: tells Typst where to find custom fonts
-"$TYPST_BIN" compile --font-path fonts document.typ "public/page-{n}.svg"
+if [ "$RENDER" = "svg" ] || [ "$RENDER" = "both" ]; then
+  echo "==> Compiling SVG..."
+  # Multi-page SVG: page-1.svg, page-2.svg, ...
+  "$TYPST_BIN" compile --font-path fonts document.typ "public/page-{n}.svg"
+  PAGE_COUNT=$(ls public/page-*.svg 2>/dev/null | wc -l)
+  echo "    $PAGE_COUNT SVG page(s) generated"
+fi
 
-# Count generated pages
-PAGE_COUNT=$(ls public/page-*.svg 2>/dev/null | wc -l)
-echo "    $PAGE_COUNT page(s) generated"
+if [ "$RENDER" = "html" ] || [ "$RENDER" = "both" ]; then
+  echo "==> Compiling HTML..."
+  # HTML export is experimental — needs --features html
+  "$TYPST_BIN" compile --features html --font-path fonts document.typ public/document.html
+  echo "    HTML generated: public/document.html"
+fi
 
 echo "==> Generating page manifest..."
-# List the pages in a JSON file so index.html knows how many there are
 {
   echo "{"
-  echo "  \"pages\": ["
+
+  echo "  \"svg\": ["
   first=1
-  for f in public/page-*.svg; do
-    name=$(basename "$f")
-    if [ $first -eq 1 ]; then
-      first=0
-    else
-      echo ","
-    fi
-    printf "    \"%s\"" "$name"
-  done
-  echo ""
-  echo "  ]"
+  if [ "$RENDER" = "svg" ] || [ "$RENDER" = "both" ]; then
+    for f in public/page-*.svg; do
+      [ -f "$f" ] || continue
+      name=$(basename "$f")
+      if [ $first -eq 1 ]; then
+        first=0
+      else
+        echo ","
+      fi
+      printf "    \"%s\"" "$name"
+    done
+    if [ $first -eq 0 ]; then echo ""; fi
+  fi
+  echo "  ],"
+
+  if [ -f public/document.html ]; then
+    echo "  \"html\": \"document.html\""
+  else
+    echo "  \"html\": null"
+  fi
+
   echo "}"
 } > public/pages.json
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h2>Introduction</h2>
+    <p>This document is compiled automatically on every <code>git push</code> and served as SVG by a CDN. You can edit this <code>document.typ</code> file and the result will be updated on your site within seconds.</p>
+    <p>The body text uses <strong>EB Garamond</strong>, a digital revival of the typefaces cut by Claude Garamont in the 16th century. Headings and UI use <em>Inter</em>, and code uses <code>JetBrains Mono</code>.</p>
+    <h2>Typography</h2>
+    <h3>Mathematics</h3>
+    <p>A classic equation:</p>
+    <p>The Pythagorean theorem:</p>
+    <p>, and Euler’s identity:</p>
+    <p>.</p>
+    <h3>Source code</h3>
+    <div>
+      <pre><code data-lang="python"><span style="color: #d73948">def</span> <span style="color: #4b69c6">fibonacci</span>(n: <span style="color: #4b69c6">int</span>) -> <span style="color: #4b69c6">list</span>[<span style="color: #4b69c6">int</span>]:<br>    <span style="color: #74747c">"""</span><span style="color: #74747c">Return the first n Fibonacci numbers.</span><span style="color: #74747c">"""</span><br>    seq <span style="color: #d73948">=</span> [<span style="color: #b60157">0</span>, <span style="color: #b60157">1</span>]<br>    <span style="color: #d73948">for</span> <span style="color: #d73948">_</span> <span style="color: #d73948">in</span> <span style="color: #4b69c6">range</span>(n <span style="color: #d73948">-</span> <span style="color: #b60157">2</span>):<br>        seq.<span style="color: #4b69c6">append</span>(seq[<span style="color: #d73948">-</span><span style="color: #b60157">1</span>] <span style="color: #d73948">+</span> seq[<span style="color: #d73948">-</span><span style="color: #b60157">2</span>])<br>    <span style="color: #d73948">return</span> seq[:n]<br><br><span style="color: #4b69c6">print</span>(<span style="color: #4b69c6">fibonacci</span>(<span style="color: #b60157">10</span>))</code></pre>
+    </div>
+    <h3>Quotes and emphasis</h3>
+    <p><strong>Bold words</strong>, <em>italic</em>, and <code>inline code</code> stand out clearly from each other.</p>
+    <p>“ Typography exists to honor content. ”</p>
+    <h2>Going further</h2>
+    <ul>
+      <li>Edit <code>document.typ</code> to change the content</li>
+      <li>The build happens in <code>build.sh</code></li>
+      <li>The display page is <code>public/index.html</code></li>
+      <li>The fonts live in <code>fonts/</code> (all under the OFL license)</li>
+    </ul>
+  </body>
+</html>

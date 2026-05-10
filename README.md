@@ -1,10 +1,10 @@
 # typst2web
 
-Static site that renders a [Typst](https://typst.app/) document as SVG and displays it in a web page. Deployable as-is on **Vercel** or **Cloudflare Pages**.
+Static site that renders a [Typst](https://typst.app/) document as SVG and/or HTML and displays it in a web page. Deployable as-is on **Vercel** or **Cloudflare Pages**.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/guillaumejay/typst2web) [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/guillaumejay/typst2web)
 
-One click to fork + deploy on either platform.
+One click to clone + deploy on either platform. Note: both buttons create an **independent copy** of this repo in your GitHub account — not a GitHub fork, so there's no upstream link or "Sync fork" relationship.
 
 ## How it works
 
@@ -67,10 +67,25 @@ Otherwise, just push and check the result on the preview URL.
 └── package.json
 ```
 
+## Render mode
+
+`build.sh` reads the `RENDER` environment variable to decide which format(s) to produce:
+
+```bash
+bash build.sh                # default: both (SVG + HTML)
+RENDER=svg  bash build.sh    # SVG only (multi-page)
+RENDER=html bash build.sh    # HTML only (single file, experimental)
+RENDER=both bash build.sh    # explicit both
+```
+
+When both formats are available, `public/index.html` shows a **SVG / HTML toggle** in the header. Otherwise the available format is displayed directly. On Vercel / Cloudflare Pages, set `RENDER` in the build settings → Environment Variables to override the default.
+
+The HTML view is rendered inline with **Shadow DOM** so the Typst-emitted CSS does not leak into the surrounding page.
+
 ## Customization
 
 - **Web page styling**: edit the `<style>` block in `public/index.html`
-- **Output format**: replace `page-{n}.svg` with `document.pdf` in `build.sh` if you prefer an embedded PDF
+- **Output format**: see "Render mode" above, or replace `page-{n}.svg` with `document.pdf` in `build.sh` if you prefer an embedded PDF
 
 ## Fonts
 

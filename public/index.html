@@ -10,20 +10,102 @@
       --bg: #f4f4f4;
       --page-bg: #fff;
       --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --fg: #222;
+      --muted: #666;
+      --border: rgba(0, 0, 0, 0.1);
+      --btn-bg: #fff;
+      --btn-active-bg: #222;
+      --btn-active-fg: #fff;
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #1a1a1a;
         --page-bg: #fff;
         --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        --fg: #eee;
+        --muted: #aaa;
+        --border: rgba(255, 255, 255, 0.15);
+        --btn-bg: #2a2a2a;
+        --btn-active-bg: #eee;
+        --btn-active-fg: #111;
       }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
     body {
       background: var(--bg);
+      color: var(--fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       padding: 24px 16px;
+    }
+    .topbar {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .topbar h1 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .topbar h1 a:hover { color: var(--muted); }
+    .topbar nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .topbar a:hover { color: var(--fg); }
+    .gh-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      color: var(--muted);
+    }
+    .gh-link:hover { color: var(--fg); }
+    .gh-link svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+      fill: currentColor;
+    }
+    #format-toggle {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    #format-toggle[hidden] { display: none; }
+    #format-toggle button {
+      background: var(--btn-bg);
+      color: var(--fg);
+      border: 0;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    #format-toggle button + button {
+      border-left: 1px solid var(--border);
+    }
+    #format-toggle button[aria-pressed="true"] {
+      background: var(--btn-active-bg);
+      color: var(--btn-active-fg);
     }
     main {
       max-width: 900px;
@@ -46,27 +128,40 @@
     }
     .status {
       text-align: center;
-      color: #888;
+      color: var(--muted);
       padding: 40px 16px;
     }
   </style>
 </head>
 <body>
+  <header class="topbar">
+    <h1><a href="https://github.com/guillaumejay/typst2web"
+           target="_blank" rel="noopener noreferrer">typst2web</a></h1>
+    <nav>
+      <div id="format-toggle" hidden role="group" aria-label="Render format">
+        <button type="button" data-fmt="svg" aria-pressed="true">SVG</button>
+        <button type="button" data-fmt="html" aria-pressed="false">HTML</button>
+      </div>
+      <a class="gh-link"
+         href="https://github.com/guillaumejay/typst2web"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="View source on GitHub" title="View source on GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+      </a>
+    </nav>
+  </header>
   <main id="doc">
-    <p class="status">Loading…</p>
+    <p class="status">Loading&hellip;</p>
   </main>
   <script>
     (async () => {
       const root = document.getElementById('doc');
-      try {
-        const res = await fetch('pages.json', { cache: 'no-cache' });
-        if (!res.ok) throw new Error('pages.json: ' + res.status);
-        const { pages } = await res.json();
-        if (!Array.isArray(pages) || pages.length === 0) {
-          root.innerHTML = '<p class="status">No pages were generated.</p>';
-          return;
-        }
-        root.innerHTML = '';
+      const toggle = document.getElementById('format-toggle');
+
+      const renderSvg = (pages) => {
+        root.replaceChildren();
         for (const name of pages) {
           const wrap = document.createElement('div');
           wrap.className = 'page';
@@ -76,6 +171,75 @@
           img.loading = 'lazy';
           wrap.appendChild(img);
           root.appendChild(wrap);
+        }
+      };
+
+      const renderHtml = async (name) => {
+        root.replaceChildren(Object.assign(
+          document.createElement('p'),
+          { className: 'status', textContent: 'Loading HTML…' }
+        ));
+        const res = await fetch(name, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(name + ': ' + res.status);
+        const text = await res.text();
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+
+        const host = document.createElement('div');
+        host.className = 'page';
+        host.style.padding = '24px';
+        const shadow = host.attachShadow({ mode: 'open' });
+
+        for (const node of doc.head.querySelectorAll('style, link[rel="stylesheet"]')) {
+          shadow.appendChild(node.cloneNode(true));
+        }
+        const wrap = document.createElement('div');
+        wrap.innerHTML = doc.body.innerHTML;
+        shadow.appendChild(wrap);
+
+        root.replaceChildren(host);
+      };
+
+      const setActive = (fmt) => {
+        for (const btn of toggle.querySelectorAll('button')) {
+          btn.setAttribute('aria-pressed', String(btn.dataset.fmt === fmt));
+        }
+      };
+
+      try {
+        const res = await fetch('pages.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error('pages.json: ' + res.status);
+        const manifest = await res.json();
+        const svgPages = Array.isArray(manifest.svg) ? manifest.svg : [];
+        const htmlFile = manifest.html || null;
+        const hasSvg = svgPages.length > 0;
+        const hasHtml = !!htmlFile;
+
+        if (!hasSvg && !hasHtml) {
+          root.innerHTML = '<p class="status">No pages were generated.</p>';
+          return;
+        }
+
+        const showFormat = (fmt) => {
+          setActive(fmt);
+          if (fmt === 'html') {
+            renderHtml(htmlFile).catch((err) => {
+              root.innerHTML = '<p class="status">Failed to load HTML: ' + err.message + '</p>';
+            });
+          } else {
+            renderSvg(svgPages);
+          }
+        };
+
+        if (hasSvg && hasHtml) {
+          toggle.hidden = false;
+          for (const btn of toggle.querySelectorAll('button')) {
+            btn.addEventListener('click', () => showFormat(btn.dataset.fmt));
+          }
+          showFormat('svg');
+        } else if (hasSvg) {
+          showFormat('svg');
+        } else {
+          showFormat('html');
         }
       } catch (err) {
         root.innerHTML = '<p class="status">Failed to load document: ' + err.message + '</p>';
