@@ -2,9 +2,15 @@
 
 Static site that renders a [Typst](https://typst.app/) document as SVG and/or HTML and displays it in a web page. Deployable as-is on **Vercel** or **Cloudflare Pages**.
 
+**Live demo:** [typst2web-demo.vercel.app](https://typst2web-demo.vercel.app/)
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/guillaumejay/typst2web) [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/guillaumejay/typst2web)
 
-One click to clone + deploy on either platform. Note: both buttons create an **independent copy** of this repo in your GitHub account — not a GitHub fork, so there's no upstream link or "Sync fork" relationship.
+Each button targets one specific platform:
+- **Deploy with Vercel** → clones the repo into your GitHub account and sets up a Vercel project that auto-rebuilds on every push.
+- **Deploy to Cloudflare** → does the same thing on Cloudflare Pages / Workers.
+
+Pick whichever one you want; you can also use both (the same repo can be deployed to both platforms in parallel). Note: each button creates an **independent copy** of this repo in your GitHub account — not a GitHub fork, so there's no upstream link or "Sync fork" relationship.
 
 ## How it works
 
